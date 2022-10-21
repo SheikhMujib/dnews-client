@@ -6,27 +6,43 @@ import { AuthContext } from "../../../contexts/AuthProvider";
 
 const Register = () => {
   const [error, setError] = useState("");
-  const { createUser } = useContext(AuthContext);
+  const [accepted, setAccepted] = useState(false);
+
+  const { createUser, updateUserProfile } = useContext(AuthContext);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const form = event.target;
     const name = form.name.value;
-    const photoUrl = form.photoURL.value;
+    const photoURL = form.photoURL.value;
     const email = form.email.value;
     const password = form.password.value;
-    console.log(name, photoUrl, email, password);
 
     createUser(email, password)
       .then((result) => {
         const user = result.user;
         console.log(user);
         form.reset();
+        handleUpdateUserProfile(name, photoURL);
       })
       .catch((error) => {
         console.error(error);
         setError(error.message);
       });
+  };
+
+  const handleUpdateUserProfile = (name, photoURL) => {
+    const profile = {
+      displayName: name,
+      photoURL: photoURL,
+    };
+    updateUserProfile(profile)
+      .then(() => {})
+      .catch((error) => console.error(error));
+  };
+
+  const handleAccepted = (event) => {
+    setAccepted(event.target.checked);
   };
 
   return (
@@ -65,12 +81,17 @@ const Register = () => {
         />
       </Form.Group>
       <Form.Group className="mb-3" controlId="formBasicCheckbox">
-        <Form.Check 
-        type="checkbox" 
-        label={<>Accept <Link to="/terms">Terms and Conditions</Link></>} 
+        <Form.Check
+          onClick={handleAccepted}
+          type="checkbox"
+          label={
+            <>
+              Accept <Link to="/terms">Terms and Conditions</Link>
+            </>
+          }
         />
       </Form.Group>
-      <Button variant="primary" type="submit">
+      <Button variant="primary" type="submit" disabled={!accepted}>
         Register
       </Button>
       <Form.Text className="text-danger ms-2">{error}</Form.Text>
