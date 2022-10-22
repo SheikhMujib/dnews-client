@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../contexts/AuthProvider";
 
@@ -8,10 +9,10 @@ const Login = () => {
   const [error, setError] = useState("");
 
   const nevigate = useNavigate();
-  const { signIn } = useContext(AuthContext);
+  const { signIn, setLoading } = useContext(AuthContext);
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || '/'
+  const from = location.state?.from?.pathname || "/";
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -26,12 +27,19 @@ const Login = () => {
         console.log(user);
         setError("");
         form.reset();
-        nevigate(from, {replace:true});
+        if (user.emailVerified) {
+          nevigate(from, { replace: true });
+        } else {
+          toast.error("Your email is not verified. Please, verify now.");
+        }
       })
       .catch((error) => {
         console.error(error);
         setError(error.message);
-      });
+      })
+      .finally(()=>{
+        setLoading(false)
+      })
   };
 
   return (
