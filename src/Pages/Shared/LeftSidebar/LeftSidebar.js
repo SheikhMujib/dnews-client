@@ -5,7 +5,7 @@ const LeftSidebar = () => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/news-categories")
+    fetch("https://dnews-server.vercel.app/news-categories")
       .then((res) => res.json())
       .then((data) => setCategories(data));
   }, []);
@@ -13,11 +13,11 @@ const LeftSidebar = () => {
     <div>
       <h3>All Categories: {categories.length}</h3>
       <div>
-        {
-            categories.map(category => <p key={category.id}>
-<Link to={`/categories/${category.id}`}>{category.name}</Link>
-            </p> )
-        }
+        {categories.map((category) => (
+          <p key={category.id}>
+            <Link to={`/categories/${category.id}`}>{category.name}</Link>
+          </p>
+        ))}
       </div>
     </div>
   );
